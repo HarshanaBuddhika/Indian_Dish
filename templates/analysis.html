@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Analysis</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="/home">Home</a>
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+        <a href="/analysis">Live Analysis</a>
+        <a href='/pastanalysis'>Past Analysis</a>
+        <a href="/" class="logout">Logout</a>
+    </div>
+
+    <hr>
+    <hr>
+    <hr>
+    <hr>
+    <hr>
+    <hr>
+    
+
+    <div class="form">
+        <h2>Lets find the recepie!!!!!!!!!!!!</h2>
+        <form action="/submit" method="post" enctype="multipart/form-data">
+            
+
+            <label for="file" class="custom-file-upload">
+                Choose an image
+                <input type="file" id="file" name="file" accept="image/*">
+            </label>
+            <br><br>
+
+            <input type="submit" class="button" value="Upload">
+        </form>
+    </div>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Apply the fade-in effect when the page is loaded
+        document.body.classList.add('fade-in');
+    
+        // Remove the fade-in class after the animation completes
+        setTimeout(() => {
+            document.body.classList.remove('fade-in');
+        }, 500); // Match the duration of the fade-in effect
+    
+        // Fade-out effect when navigating away
+        document.addEventListener('click', (e) => {
+            const target = e.target.closest('a'); // Check for link clicks
+            if (target && target.href) {
+                e.preventDefault(); // Prevent instant navigation
+                document.body.classList.add('fade-out');
+                setTimeout(() => {
+                    window.location.href = target.href; // Navigate after fade-out
+                }, 500); // Match the duration of the fade-out effect
+            }
+        });
+    });
+    
+</script>
+</html>

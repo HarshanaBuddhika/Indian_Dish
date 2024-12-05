@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="/home">Home</a>
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+        <a href="/analysis">Live Analysis</a>
+        <a href='/pastanalysis'>Past Analysis</a>
+        <a href="/" class="logout">Logout</a>
+    </div>
+
+<div class="content">
+    <h1>Welcome to India Food Recepie Finder</h1>
+    <p>
+        Indian food is renowned for its vibrant flavors, aromatic spices,<br>
+         and diverse regional specialties, reflecting the country's rich cultural heritage.<br>
+        It offers a wide variety of dishes, from the creamy butter chicken <br>
+        and spiced biryanis of the North to the tangy sambar and coconut-infused <br>
+        curries of the South. Staples like rice, wheat-based flatbreads,<br>
+        and lentils are complemented by a medley of vegetables, meats, <br>
+        and seafood, often cooked with ingredients like turmeric, cumin,<br>
+        coriander, and chili.
+        Indian cuisine caters to a range of dietary preferences, <br>
+        with an abundance of vegetarian options alongside non-vegetarian delicacies.<br>
+        The use of herbs, spices, and traditional cooking methods like <br>
+        tandoori and slow simmering create an unparalleled <br>
+        gastronomic experience, making Indian food beloved worldwide.
+      </p>
+      
+</div>
+
+
+
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Apply the fade-in effect when the page is loaded
+        document.body.classList.add('fade-in');
+    
+        // Remove the fade-in class after the animation completes
+        setTimeout(() => {
+            document.body.classList.remove('fade-in');
+        }, 500); // Match the duration of the fade-in effect
+    
+        // Fade-out effect when navigating away
+        document.addEventListener('click', (e) => {
+            const target = e.target.closest('a'); // Check for link clicks
+            if (target && target.href) {
+                e.preventDefault(); // Prevent instant navigation
+                document.body.classList.add('fade-out');
+                setTimeout(() => {
+                    window.location.href = target.href; // Navigate after fade-out
+                }, 500); // Match the duration of the fade-out effect
+            }
+        });
+    });
+    
+</script>
+
+</html>
