@@ -1,18 +1,26 @@
 from flask import Flask, render_template, request, redirect, url_for,jsonify, session
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
 import numpy as np
 from tempfile import NamedTemporaryFile
 from pymongo import MongoClient
+import requests
+
+"""from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing import image"""
+
+#----------------------------------------------------------------------------------------------------------------------------------------
+colab_url = 'https://bba0-35-237-245-98.ngrok-free.app/'
+#----------------------------------------------------------------------------------------------------------------------------------------
 
 
-app = Flask(__name__)
+
+
+app = Flask(__name__, static_folder='static')
 app.secret_key = 'abcd1234'
 
-# Load the model from the file
-model = load_model('Models/dishid_model1.h5')
+"""# Load the model from the file
+model = load_model('Models/dishid_model1.h5')"""
 
 #DB Connection
 mongodb_uri = 'mongodb+srv://harshanabuddhika9:uh4Av1QRBqmhXjwL@cluster0.bgvrx7w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
@@ -101,7 +109,7 @@ def registration():
             return jsonify({"status": "Success"}), 200
         else:
             return jsonify({"status": "No data provided"}), 400
-
+"""
 @app.route('/submit', methods=['POST'])
 def submit():
     
@@ -179,7 +187,69 @@ def submit():
         return "The uploaded file is not a valid image.", 400
     except Exception as e:
         return f"Error processing the image: {str(e)}", 500
+
+"""
+@app.route('/submit', methods=['POST'])
+def submit():
     
+    colab_flask_url = f'{colab_url}/submit'
+
+    if 'file' not in request.files:
+        return "No file part in the request", 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return "No selected file", 400
+
+    try:
+        files = {'file': (file.filename, file.read(), file.mimetype)}
+        response = requests.post(colab_flask_url, files=files)
+
+        if response.status_code == 200:
+            response_data = response.json()
+            predicted_class = response_data.get('predicted_class', 'Unknown')
+            import logging
+            logging.basicConfig(level=logging.DEBUG)
+            logging.debug(f"Received predicted class from Colab: {predicted_class}")
+
+            # Map each class to a corresponding PDF file
+            recipe_pdfs = {
+            'Butter naan': 'Butter_naan.pdf',
+            'Chapati': 'Chapati.pdf',
+            'Fried Rice': 'Fried_Rice.pdf',
+            'Idli': 'Idli.pdf',
+            'Kadai Paneer': 'Kadai_Paneer.pdf',
+            'Masala Dosa': 'Masala_Dosa.pdf',
+            'Paani Puri': 'Paani_Puri.pdf',
+            'Pakode': 'Pakode.pdf',
+            'Samosa': 'Samosa.pdf'
+            }
+
+            recipe_pdf = recipe_pdfs.get(predicted_class, None)
+
+            username = session.get('username')
+            if predicted_class != 'Unknown':
+                db_payload = {
+                    'Username': username,
+                    'Food_Item': predicted_class,
+                }
+                past_analysis_collection.insert_one(db_payload)
+
+            return render_template('results.html',
+                                food_item=predicted_class,
+                                pdf_name=recipe_pdf)
+
+        else:
+            return f"Error from Colab app: {response.text}", response.status_code
+
+    except requests.exceptions.RequestException as e:
+        return f"Error communicating with Colab app: {str(e)}", 500
+    except Exception as e:
+        return f"Error processing the request: {str(e)}", 500
+
+
+
+
 @app.route('/pastanalysis', methods=['POST','GET'])
 def pastanalysis():
     username = session.get('username')
@@ -246,4 +316,4 @@ def delete():
 #-----------------------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
